@@ -1,0 +1,47 @@
+name: Final evaluation static checks
+
+on:
+  push:
+    branches: [fraud-final-evaluation]
+    paths:
+      - "src/final_eval_*.py"
+      - "notebooks/fraud_final_evaluation.ipynb"
+      - "docs/final_evaluation_protocol*.md"
+      - ".github/workflows/final-eval-static.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile final-evaluation Python sources
+        run: python -m py_compile src/final_eval_continuation.py src/final_eval_runner.py
+      - name: Validate final notebook without executing it
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('notebooks/fraud_final_evaluation.ipynb')
+          nb = json.loads(path.read_text(encoding='utf-8'))
+          assert nb['nbformat'] == 4
+          assert nb['metadata']['frozen_implementation_commit'] == 'a4ab1de96e2d0bed7fa1f19836f9585f3f10344f'
+          assert nb['metadata']['frozen_engine_sha256'] == '6debf4f7501ee0f937bd53c9992f8ecc642c946039dd653aa284229078d2cb1e'
+          code = [c for c in nb['cells'] if c['cell_type'] == 'code']
+          assert code
+          for cell in code:
+              assert cell.get('execution_count') is None
+              assert not cell.get('outputs')
+              compile(''.join(cell['source']), '<notebook-cell>', 'exec')
+          text = path.read_text(encoding='utf-8')
+          assert 'EVALUATE_RESERVED_FINAL_TEST_ONCE' in text
+          assert 'Runtime → Run all' in text
+          print('Static final-evaluation checks passed; reserved period was not materialized or scored.')
+          PY
