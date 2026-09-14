@@ -220,3 +220,4 @@ __marimo__/
 # Generated fraud experiments and local model outputs
 outputs/
 catboost_info/
+.fraud_v2_runtime/

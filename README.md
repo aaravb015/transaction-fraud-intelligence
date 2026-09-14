@@ -1,116 +1,118 @@
 # Transaction Fraud Intelligence
 
-A reproducible first experiment in transaction fraud detection: synthetic payment histories, point-in-time behavioural features, rules, logistic regression, and CatBoost.
-
-[![Open development notebook in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aaravb015/transaction-fraud-intelligence/blob/codex-fraud-v1/notebooks/fraud_v1.ipynb)
-
-**Status:** initial modelling implementation. Performance must come from an executed run. The final chronological test period stays reserved during development. The dashboard is a later milestone.
-
-## Start here
-
-1. Open the development notebook using the button above.
-2. Choose a fresh CPU runtime in Colab.
-3. Select **Runtime → Run all**. The notebook installs its packages and creates the data itself.
-4. Download the ZIP offered by the last cell. Save the notebook itself from Colab's File menu if you want its executed output.
-5. Start with `comparison.csv`, `scenario_breakdown.csv`, and the selected model's `*_error_cases.csv`.
-
-The development button targets the implementation branch so it works before a merge. Keep that branch while using this link, or change it to `main` after merging.
-
-## The question
-
 **Does customer history improve fraud ranking within a fixed daily review budget?**
 
-The experiment compares:
+A reproducible synthetic fraud experiment comparing fixed rules, logistic regression with history, CatBoost on the current transaction, and CatBoost with history.
 
-| Detector | Inputs / role |
+[![Open V2 in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aaravb015/transaction-fraud-intelligence/blob/codex-fraud-v1/notebooks/fraud_v2.ipynb)
+
+**Status:** V2 development implementation. The full V2 experiment is awaiting the user's run and independent review. **The final test remains locked. Nothing is merged into `main`.**
+
+## Run V2
+
+1. Open the notebook using the Colab button.
+2. Use a fresh CPU runtime and select **Runtime → Run all**.
+3. Let all five declared seeds and the six ablations finish.
+4. Download the timestamped `fraud_v2_…zip` offered by the final cell.
+5. Return that ZIP for independent review before choosing the next experiment.
+
+No dataset, account credentials, repository clone, package edits or kernel restart are required for the supported Python 3.11–3.13 runtime range. The notebook includes its own engine, installs wheel-based dependencies into a separate directory, and runs the scientific code in fresh subprocesses. Colab's preloaded NumPy/Pandas modules remain unchanged. Python and package versions are printed before the experiment starts and recorded in the manifest.
+
+The button points to the development branch so it works before a merge. The original [V1 notebook](notebooks/fraud_v1.ipynb) is retained for source comparison; its historical installation cell is not the V2 launch path.
+
+## What changed in V2
+
+| Area | Implemented behaviour |
 |---|---|
-| Rules | Fixed, transparent conditions; 0–100 points |
-| Logistic regression | Full historical feature set; simple ML baseline |
-| CatBoost, current transaction | Amount, hour, country and category |
-| CatBoost, with history | Adds customer, timing, novelty, failed-outcome and shared-device features |
+| Environment | Isolated, self-contained execution; CI matrix for Python 3.11, 3.12 and 3.13 |
+| Locked test | Reserved-period events are never materialized; feature, scoring and export boundaries reject them |
+| Simulator | More ordinary-looking fraud, legitimate lookalikes retained, and a paired untrained V1-like separability reference |
+| Primary comparison | The original four comparators, 21 history features, current-transaction fields, and 20/50/100 daily budgets are preserved |
+| Low-and-slow | Caught/missed/routine diagnosis, 7/14/30-day longitudinal measures and a conditional separate challenger |
+| Robustness | Every fixed seed: **42, 123, 2025, 31415, 27182**; per-seed results and mean/std/min/max |
+| Ablation | Six feature families removed one at a time on the predeclared primary seed |
+| False positives | Context review rates, median/Q75 scores, recurring evidence and representative examples |
+| Daily operations | Day-level variability, exhausted budgets, underfilled days and unused capacity |
+| Outputs | Complete V2 ZIP with metrics, predictions, cases, charts, models, configuration and timing checks |
 
-All detectors use the same validation transactions and budgets of 20, 50 and 100 reviews per UTC day. The 50-review operating point supplies a provisional leader for case investigation.
+See the [source specification](docs/v1_review_and_v2_plan.md), [predeclared experiment design](docs/v2_experiment_design.md), and [implementation details and acceptance mapping](docs/v2_implementation.md).
 
-No claimed improvement is written into the project in advance.
+## Why review capacity matters
 
-## Data and timing
+Investigators have limited time. A model that surfaces more fraud by sending every transaction for review does not establish a useful operational improvement.
 
-The self-contained simulator generates fictional customers, merchants, devices and payment attempts. It includes travel, permanent phone changes, large legitimate purchases and legitimate bursts, plus account takeover, card testing and low-and-slow fraud.
+At the same daily review budget, the experiment measures precision, fraud recall, legitimate reviews, false-positive rate, and **attempted fraudulent value** captured. Average precision and ROC-AUC describe ranking quality. Scores remain **uncalibrated**.
 
-Default settings: 1,200 customers, 120 days, 240 merchants, seed 42, synthetic INR amounts. The automated smoke run uses 360 customers and shorter model training.
+Daily top-K is an **offline end-of-day ranking diagnostic**. REVIEW and NO_REVIEW are diagnostic labels, not live approval or blocking. Amounts include failed attempts; value captured is not settled loss, prevented loss or savings.
 
-- Historical features use events strictly before the decision time.
-- Same-timestamp events are scored together before history updates.
-- Failed outcomes become available after a simulated 2–120 seconds.
-- Fraud confirmations and legitimate labels mature after an assumed seven days.
-- Training and early-stopping labels must be available at their respective cutoffs.
-- Simulator labels, hidden customer profiles and raw entity IDs do not enter the models.
-- The final 15% of the timeline is not evaluated. Its labels exist inside the simulator; the lock is procedural.
+## Preserve the V1 story, test it more carefully
 
-See [the readable implementation blueprint](docs/blueprint.md) for field meanings and assumptions.
+The reviewed full V1 run reported average precision of approximately 0.8956 for CatBoost with history, 0.8487 for logistic regression with history, and 0.1405 for current-transaction CatBoost. Those are **historical synthetic V1 results**, documented in the [V1 review](docs/v1_review_and_v2_plan.md), not V2 results or real-world performance.
 
-## What the results mean
+The V2 question is whether the value of behavioural context remains credible under a harder simulation and across all declared seeds. No requirement says V2 scores must exceed V1 scores. The simulator changed, so an across-version score difference is not a pure model improvement.
 
-The notebook reports average precision, ROC-AUC, precision, recall, false-positive rate, reviewed legitimate transactions, and labelled fraudulent **attempted value** captured.
+The optional longitudinal challenger stays separate from the four-model comparison. Its features are nominated from the primary seed's development diagnosis by a fixed gate. Seed-42 gains are exploratory; the same frozen candidate list is then evaluated on the other four synthetic worlds. If no candidate qualifies, the ZIP records that outcome without inventing an improvement.
 
-Daily top-K is an offline end-of-day ranking diagnostic. REVIEW and NO_REVIEW describe this diagnostic, not live payment approval or blocking. Attempted amounts include failed transactions; captured value is not prevented loss or savings.
+## Timeline and safeguards
 
-Scores are uncalibrated. Observed evidence and triggered rules are reported separately; neither is a causal explanation. Context tags are simulator annotations, not confirmed real-world attack diagnoses.
+The nominal horizon remains 120 days. V2 only generates development days 0–101:
 
-## Run outputs
+- Training labels must be available at the day-72 fitting cutoff.
+- Early-stopping labels must be available by day 86.
+- Development validation covers days 86–101.
+- Day 102 onward remains reserved, ungenerated and unexamined.
 
-Each execution creates a timestamped folder and ZIP under `outputs/`:
+Same-timestamp events are scored together before history updates. Failed outcomes only enter history once their availability time arrives. Current attempts cannot enter their own baselines. New longitudinal windows compare recent activity with a disjoint earlier baseline, with history-coverage checks.
 
-- `comparison.csv` and `daily_metrics.csv`
-- `scenario_breakdown.csv` and `legitimate_context_breakdown.csv`
-- Per-detector validation predictions and investigation cases
-- `validation_comparison.png`
-- Saved CatBoost models and the logistic preprocessing/model pipeline
-- `development_transactions.csv.gz` (excludes the reserved test period)
-- `feature_importance.csv`, `split_audit.csv`, and `manifest.json`
+Labels, scenario/context tags, hidden customer-generation parameters and raw entity IDs are excluded from model features. Every seed records timing checks and a development-data fingerprint. Both `locked_test_evaluated` and `locked_test_materialized` remain `false`.
 
-The manifest records configuration, dependency versions, dataset fingerprint, feature order, rules and checks. Saved models need the same history builder at inference. Do not treat a single transaction row as sufficient input to the history model.
+## Results ZIP
 
-## Repository contents
+The timestamped V2 ZIP includes:
+
+- `comparison.csv`, `daily_metrics.csv`, `daily_variability_summary.csv`
+- `scenario_breakdown.csv`, `legitimate_context_breakdown.csv`, `false_positive_examples.csv`
+- `feature_importance.csv`, `feature_separation_audit.csv`, `simulator_overlap_audit.csv`
+- `low_and_slow_diagnostics.csv`, `low_and_slow_overview.csv`, `longitudinal_feature_decisions.csv`
+- `longitudinal_tradeoffs.csv`, `longitudinal_context_tradeoffs.csv`
+- `robustness_summary.csv`, `ablation_summary.csv`
+- Each primary detector's validation predictions and investigation cases
+- Separate per-seed prediction/case exports under `seeds/`
+- Three concise validation charts
+- Saved primary models and the conditional challenger when applicable
+- Development transactions, `split_audit.csv`, `manifest.json`, `resolved_packages.txt`, `output_contract_check.json`
+
+The export is checked for required files, the complete five-seed/model/budget grid and development-only prediction timestamps before the ZIP is offered.
+
+## Code and checks
 
 | Path | Purpose |
 |---|---|
-| `notebooks/fraud_v1.ipynb` | Complete executable experiment |
-| `docs/blueprint.md` | Human-readable implementation specification |
-| `requirements.txt` | Pinned experiment dependencies |
-| `scripts/check_notebook.py` | Notebook validation and optional small-data execution |
-| `.github/workflows/notebook-smoke.yml` | Automated check of the submitted notebook |
-
-To run the automated check locally with Python 3.11:
+| `notebooks/fraud_v2.ipynb` | Self-contained top-to-bottom Colab experiment |
+| `src/fraud_v2.py` | Readable simulation, history, modelling, analysis and export engine |
+| `scripts/notebook_bootstrap.py` | Isolated dependency setup and notebook presentation |
+| `scripts/build_notebook.py` | Generates the notebook from the reviewed source; `--check` detects divergence |
+| `scripts/check_notebook.py` | Schema/syntax checks, actual notebook smoke execution, host-module isolation and ZIP checks |
+| `tests/test_v2_safeguards.py` | Temporal, maturity, capacity and V1-comparison regression checks |
+| `requirements.txt` / `requirements-dev.txt` | Experiment and verification dependencies |
 
 ```bash
-python -m pip install -r requirements.txt nbformat==5.10.4 nbclient==0.10.2 ipykernel
+python -m pip install -r requirements.txt -r requirements-dev.txt
+python -m pytest -q
+python scripts/build_notebook.py --check
 python scripts/check_notebook.py --execute
 ```
 
-This validates the notebook schema and Python syntax, then executes it on the smoke configuration. Execution also checks future invariance, identical timestamps, delayed outcomes and exclusion of the current amount from its baseline. GitHub Actions retains the executed notebook and generated outputs as a downloadable artifact.
+CI runs the real Jupyter notebook on Python 3.11, 3.12 and 3.13. All five seeds are included in smoke mode. A local environment that cannot start a Jupyter socket can explicitly use `--execute --plain` to execute the same cells; that does not replace the CI kernel check.
 
-## Development path
+After changing the engine, frontend or dependencies, run `python scripts/build_notebook.py` and commit the resulting notebook. Generated data, checkpoints and packages remain outside source control.
 
-1. Execute the first full notebook and inspect mistakes.
-2. Make one evidence-led feature or modelling change and compare it on validation.
-3. Repeat the chosen experiment across seeds and temporal windows.
-4. Freeze the approach and evaluate the reserved final period.
-5. Extract reusable modules and build the investigation dashboard.
-6. Add a separate public-data benchmark and document what it can establish.
+## Limits and next decision
 
-Calibration, operational queue replay, approval/block policy, anomaly detection, SHAP and graph analysis are not implemented in this first notebook.
+This is a simplified synthetic benchmark. Its fraud/legitimate overlap can be measured, but it cannot establish real-world accuracy. The paired V1-like reference is not an exact reconstruction of the archived V1 run. Evidence strings are descriptive, context tags are exclusive, and labels mature after an assumed seven days.
 
-## Limits
+Repeated seeds measure variation among synthetic worlds, not a real-population confidence interval. Ablations use one declared seed. The conditional challenger includes validation-based feature selection and must be interpreted accordingly.
 
-This project demonstrates engineering and results under a simplified simulator. It does not establish real-world fraud performance, causality, regulatory suitability, or production readiness. In particular, the model can learn biases and mechanisms we programmed into the simulation.
-
-## References
-
-- [Fraud Detection Handbook: validation strategies](https://fraud-detection-handbook.github.io/fraud-detection-handbook/Chapter_5_ModelValidationAndSelection/ValidationStrategies.html)
-- [CatBoost: fitting a classifier](https://catboost.ai/docs/en/concepts/python-reference_catboostclassifier_fit)
-- [scikit-learn: OneHotEncoder](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html)
-- [nbclient: executing notebooks](https://nbclient.readthedocs.io/en/latest/client.html)
-- [Google Colab FAQ](https://research.google.com/colaboratory/faq.html)
+No production API, deployed dashboard, public-data benchmark, SHAP, anomaly ensemble, financial savings estimate or final-test evaluation is included. The next decision follows independent review of the user's full V2 ZIP.
 
 MIT licence; see [LICENSE](LICENSE).
