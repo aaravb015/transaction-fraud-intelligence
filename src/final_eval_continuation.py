@@ -1,8 +1,8 @@
 """Deterministic reserved-period continuation for the frozen V2 simulator.
 
-This module is predeclared before final-period outcomes are exposed. It patches
-only the frozen simulator's horizon and appends new random draws after the exact
-frozen development RNG sequence has been consumed.
+This module is predeclared before final-period outcomes are exposed. It leaves
+all original development draws untouched, then appends new random draws only
+after the frozen development RNG sequence has been consumed.
 """
 
 import types
@@ -23,7 +23,6 @@ def replace_once(source, old, new):
 
 def make_final_engine_source(frozen_source):
     source = frozen_source
-    source = replace_once(source, "    horizon = dev_days * 86400\n", "    horizon = cfg.days * 86400\n")
     source = replace_once(
         source,
         '        travel_country = str(rng.choice([c for c in COUNTRIES if c != p["home"]]))\n        profiles.append(p)\n',
@@ -41,8 +40,9 @@ def make_final_engine_source(frozen_source):
 
     extension = r'''
     # FINAL_EVALUATION_CONTINUATION_V1
-    # All original development draws have already been consumed above. Only
-    # after that do we draw reserved-period continuation events.
+    # The frozen simulator above has fully consumed its development RNG stream.
+    # Only now is the horizon opened and additional reserved-period draws made.
+    horizon = cfg.days * 86400
     final_days = cfg.days - dev_days
     extension_share = final_days / dev_days
     phone_probability = 1 - (1 - 0.30) ** extension_share
