@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Generated fraud experiments and local model outputs
+outputs/
+catboost_info/
