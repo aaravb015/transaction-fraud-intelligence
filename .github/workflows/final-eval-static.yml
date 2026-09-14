@@ -7,6 +7,7 @@ on:
       - "src/final_eval_*.py"
       - "notebooks/fraud_final_evaluation.ipynb"
       - "docs/final_evaluation_protocol*.md"
+      - "docs/final_evaluation_fix_*.md"
       - ".github/workflows/final-eval-static.yml"
   workflow_dispatch:
 
@@ -23,6 +24,19 @@ jobs:
           python-version: "3.12"
       - name: Compile final-evaluation Python sources
         run: python -m py_compile src/final_eval_continuation.py src/final_eval_runner.py
+      - name: Exercise dynamic loader without simulating
+        run: |
+          python - <<'PY'
+          from src.final_eval_continuation import load_module
+          source = '''from dataclasses import dataclass
+@dataclass(frozen=True)
+class Probe:
+    value: int = 1
+'''
+          module = load_module('final_eval_loader_probe', source)
+          assert module.Probe().value == 1
+          print('Dynamic loader compatibility check passed; no simulator was executed.')
+          PY
       - name: Validate final notebook without executing it
         run: |
           python - <<'PY'
@@ -34,6 +48,7 @@ jobs:
           assert nb['nbformat'] == 4
           assert nb['metadata']['frozen_implementation_commit'] == 'a4ab1de96e2d0bed7fa1f19836f9585f3f10344f'
           assert nb['metadata']['frozen_engine_sha256'] == '6debf4f7501ee0f937bd53c9992f8ecc642c946039dd653aa284229078d2cb1e'
+          assert nb['metadata']['final_code_commit'] == 'c240fe3c07f62c719d134093d2e438c5551a56e9'
           code = [c for c in nb['cells'] if c['cell_type'] == 'code']
           assert code
           for cell in code:
