@@ -28,11 +28,7 @@ jobs:
         run: |
           python - <<'PY'
           from src.final_eval_continuation import load_module
-          source = '''from dataclasses import dataclass
-@dataclass(frozen=True)
-class Probe:
-    value: int = 1
-'''
+          source = "from dataclasses import dataclass\n@dataclass(frozen=True)\nclass Probe:\n    value: int = 1\n"
           module = load_module('final_eval_loader_probe', source)
           assert module.Probe().value == 1
           print('Dynamic loader compatibility check passed; no simulator was executed.')
