@@ -5,13 +5,22 @@ all original development draws untouched, then appends new random draws only
 after the frozen development RNG sequence has been consumed.
 """
 
+import sys
 import types
 
 
 def load_module(name, source):
     module = types.ModuleType(name)
     module.__file__ = f"<{name}>"
-    exec(compile(source, module.__file__, "exec"), module.__dict__)
+    # dataclasses inspects sys.modules[cls.__module__] while decorating classes.
+    # Register the transient module before exec so the frozen Config dataclass can
+    # be created correctly on Python 3.11-3.13. This changes no experiment logic.
+    sys.modules[name] = module
+    try:
+        exec(compile(source, module.__file__, "exec"), module.__dict__)
+    except Exception:
+        sys.modules.pop(name, None)
+        raise
     return module
 
 
