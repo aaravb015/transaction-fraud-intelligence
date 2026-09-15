@@ -1,0 +1,66 @@
+name: V2 notebook smoke run
+
+on:
+  pull_request:
+    paths:
+      - "notebooks/**"
+      - "scripts/**"
+      - "src/**"
+      - "tests/**"
+      - "requirements.txt"
+      - "requirements-dev.txt"
+      - ".github/workflows/notebook-smoke.yml"
+  push:
+    branches: [codex-fraud-v1]
+    paths:
+      - "notebooks/**"
+      - "scripts/**"
+      - "src/**"
+      - "tests/**"
+      - "requirements.txt"
+      - "requirements-dev.txt"
+      - ".github/workflows/notebook-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v2-notebook-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  notebook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install the pinned experiment and notebook runner
+        run: >
+          python -m pip install --only-binary=:all:
+          -r requirements.txt
+          -r requirements-dev.txt
+      - name: Check temporal boundaries and V1 comparison compatibility
+        run: python -m pytest -q
+      - name: Validate final-evaluation notebook without executing it
+        run: python scripts/check_final_notebook.py
+      - name: Validate and execute the notebook on a smaller dataset
+        run: python scripts/check_notebook.py --execute
+      - name: Keep the executed notebook and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fraud-v2-smoke-py${{ matrix.python }}
+          path: |
+            outputs/executed_v2_smoke.ipynb
+            outputs/v2_work_*/results/
+          if-no-files-found: ignore
+          retention-days: 14
