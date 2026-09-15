@@ -50,6 +50,8 @@ jobs:
           -r requirements-dev.txt
       - name: Check temporal boundaries and V1 comparison compatibility
         run: python -m pytest -q
+      - name: Validate final-evaluation notebook without executing it
+        run: python scripts/check_final_notebook.py
       - name: Validate and execute the notebook on a smaller dataset
         run: python scripts/check_notebook.py --execute
       - name: Keep the executed notebook and results

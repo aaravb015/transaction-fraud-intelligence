@@ -8,6 +8,8 @@ This document is written **before** the reserved final period is materialized or
 - Freeze-document commit: `455b37921e90193199543a1207026e68770faeac`
 - Frozen V2 engine SHA-256: `6debf4f7501ee0f937bd53c9992f8ecc642c946039dd653aa284229078d2cb1e`
 - Frozen development-results ZIP SHA-256: `650d3fbbce83ae82f0d821e73f30174998a2956e347dab7bc74f5bb2c41ae58a`
+- Per-seed development fingerprint source: `fraud_v2_20260915T093200_432180Z.zip`
+- Fingerprint-source ZIP SHA-256: `94ce8bd6b6f0a2490ee1b31c90bbaf1abc90a5433730a0f55a68f20dc3a47b05`
 - Seeds: `[42, 123, 2025, 31415, 27182]`
 - Models: `rules`, `logistic_history`, `catboost_current`, `catboost_history`
 - Preselected primary model: `catboost_history`
@@ -61,3 +63,20 @@ Whatever valid result appears will be reported. A poor result is not grounds to 
 ## After the run
 
 Download the timestamped `fraud_final_....zip` and independently review it before merging anything to `main`. The final README should keep development evidence and reserved-period evidence clearly separated and retain the synthetic-data limitations.
+
+## Implemented runner contract
+
+The dedicated implementation is generated as `notebooks/fraud_final_evaluation.ipynb` from readable sources. It:
+
+- verifies the frozen `src/fraud_v2.py` SHA-256 before doing any work;
+- derives a narrowly scoped continuation from the frozen simulator source;
+- consumes every original development RNG draw before adding boundary spillovers or new reserved-period draws;
+- checks each regenerated development dataframe against the reviewed full-run fingerprint;
+- requires exact row and feature equality between frozen development and the extended prefix;
+- fits the frozen three learned models only on the original training/early-stop partitions;
+- evaluates the four fixed comparators on days 102–119 at 20/50/100 reviews per day;
+- exports the complete 60-row grid, per-seed predictions, daily/scenario/context evidence, prefix checks and a final manifest;
+- requires an explicit official-run command-line acknowledgement; and
+- is checked statically in CI but is never executed there.
+
+The continuation draw order is also frozen: after all development draws, normal-stream additions proceed in customer order with conditional phone, conditional travel, routine attempts and conditional legitimate burst; fraud-stream additions then proceed in customer order for accounts without an earlier fraud episode. Duration-scaled probabilities use `1 - (1-p)^(18/102)`.

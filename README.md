@@ -6,15 +6,29 @@ A reproducible synthetic fraud experiment comparing fixed rules, logistic regres
 
 [![Open V2 in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aaravb015/transaction-fraud-intelligence/blob/codex-fraud-v1/notebooks/fraud_v2.ipynb)
 
-**Status:** V2 development implementation. The full V2 experiment is awaiting the user's run and independent review. **The final test remains locked. Nothing is merged into `main`.**
+**Status:** V2 development is complete and frozen. The full five-seed development run has been completed and reviewed. A separate final-evaluation notebook is implemented for the single reserved-period run. **Days 102–119 remain unevaluated until that notebook is intentionally run once. Nothing is merged into `main`.**
 
-## Run V2
+[![Open frozen final evaluation in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aaravb015/transaction-fraud-intelligence/blob/codex-fraud-v1/notebooks/fraud_final_evaluation.ipynb)
+
+## Run the final evaluation once
+
+1. Open `notebooks/fraud_final_evaluation.ipynb` using the second Colab button.
+2. Use a fresh CPU runtime and select **Runtime → Run all once**.
+3. Do not edit parameters, select seeds, tune models or rerun after seeing outcomes.
+4. Download the timestamped `fraud_final_…zip` offered by the last cell.
+5. Return that ZIP for independent review before any merge or README result claim.
+
+The final runner regenerates the frozen development prefix and requires an exact row-for-row and feature-for-feature match for every seed before it accepts final scores. It then refits the same frozen models using only the original training and early-stopping rows and evaluates days 102–119 at the same 20/50/100 daily capacities. `catboost_history` remains the preselected primary model regardless of the final ranking.
+
+## Reproduce V2 development
 
 1. Open the notebook using the Colab button.
 2. Use a fresh CPU runtime and select **Runtime → Run all**.
 3. Let all five declared seeds and the six ablations finish.
 4. Download the timestamped `fraud_v2_…zip` offered by the final cell.
-5. Return that ZIP for independent review before choosing the next experiment.
+5. Keep it as the development evidence package; it is not a final-period result.
+
+This reproduces development evidence only; it is not the next project step and does not touch the reserve.
 
 No dataset, account credentials, repository clone, package edits or kernel restart are required for the supported Python 3.11–3.13 runtime range. The notebook includes its own engine, installs wheel-based dependencies into a separate directory, and runs the scientific code in fresh subprocesses. Colab's preloaded NumPy/Pandas modules remain unchanged. Python and package versions are printed before the experiment starts and recorded in the manifest.
 
@@ -64,7 +78,7 @@ The nominal horizon remains 120 days. V2 only generates development days 0–101
 
 Same-timestamp events are scored together before history updates. Failed outcomes only enter history once their availability time arrives. Current attempts cannot enter their own baselines. New longitudinal windows compare recent activity with a disjoint earlier baseline, with history-coverage checks.
 
-Labels, scenario/context tags, hidden customer-generation parameters and raw entity IDs are excluded from model features. Every seed records timing checks and a development-data fingerprint. Both `locked_test_evaluated` and `locked_test_materialized` remain `false`.
+Labels, scenario/context tags, hidden customer-generation parameters and raw entity IDs are excluded from model features. Every seed records timing checks and a development-data fingerprint. In V2 development outputs, both `locked_test_evaluated` and `locked_test_materialized` remain `false`; the separate final runner changes them to `true` only inside a successfully validated final ZIP.
 
 ## Results ZIP
 
@@ -89,21 +103,29 @@ The export is checked for required files, the complete five-seed/model/budget gr
 | Path | Purpose |
 |---|---|
 | `notebooks/fraud_v2.ipynb` | Self-contained top-to-bottom Colab experiment |
+| `notebooks/fraud_final_evaluation.ipynb` | Separate, one-time reserved-period evaluator |
 | `src/fraud_v2.py` | Readable simulation, history, modelling, analysis and export engine |
+| `src/fraud_final.py` | Frozen-source verification, declared continuation, prefix proof, final scoring and ZIP export |
 | `scripts/notebook_bootstrap.py` | Isolated dependency setup and notebook presentation |
+| `scripts/final_notebook_bootstrap.py` | Isolated final-run setup, evidence preview and ZIP download |
 | `scripts/build_notebook.py` | Generates the notebook from the reviewed source; `--check` detects divergence |
+| `scripts/build_final_notebook.py` | Generates the final notebook and verifies the frozen V2 engine hash |
 | `scripts/check_notebook.py` | Schema/syntax checks, actual notebook smoke execution, host-module isolation and ZIP checks |
+| `scripts/check_final_notebook.py` | Static/schema checks only; deliberately never executes the reserved period |
 | `tests/test_v2_safeguards.py` | Temporal, maturity, capacity and V1-comparison regression checks |
+| `tests/test_final_safeguards.py` | Frozen constants, continuation patch, range guard and non-execution checks |
 | `requirements.txt` / `requirements-dev.txt` | Experiment and verification dependencies |
 
 ```bash
 python -m pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 python scripts/build_notebook.py --check
+python scripts/build_final_notebook.py --check
+python scripts/check_final_notebook.py
 python scripts/check_notebook.py --execute
 ```
 
-CI runs the real Jupyter notebook on Python 3.11, 3.12 and 3.13. All five seeds are included in smoke mode. A local environment that cannot start a Jupyter socket can explicitly use `--execute --plain` to execute the same cells; that does not replace the CI kernel check.
+CI runs the V2 development notebook on Python 3.11, 3.12 and 3.13. All five seeds are included in smoke mode. CI validates the final notebook statically but is prohibited from executing it or materializing days 102–119. A local environment that cannot start a Jupyter socket can explicitly use `--execute --plain` for V2; that does not replace the CI kernel check.
 
 After changing the engine, frontend or dependencies, run `python scripts/build_notebook.py` and commit the resulting notebook. Generated data, checkpoints and packages remain outside source control.
 
@@ -113,6 +135,6 @@ This is a simplified synthetic benchmark. Its fraud/legitimate overlap can be me
 
 Repeated seeds measure variation among synthetic worlds, not a real-population confidence interval. Ablations use one declared seed. The conditional challenger includes validation-based feature selection and must be interpreted accordingly.
 
-No production API, deployed dashboard, public-data benchmark, SHAP, anomaly ensemble, financial savings estimate or final-test evaluation is included. The next decision follows independent review of the user's full V2 ZIP.
+No production API, deployed dashboard, public-data benchmark, SHAP, anomaly ensemble or financial savings estimate is included. The next decision follows the single frozen final run and independent review of its ZIP.
 
 MIT licence; see [LICENSE](LICENSE).
