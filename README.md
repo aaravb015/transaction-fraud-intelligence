@@ -49,7 +49,7 @@ The button points to the development branch so it works before a merge. The orig
 | Daily operations | Day-level variability, exhausted budgets, underfilled days and unused capacity |
 | Outputs | Complete V2 ZIP with metrics, predictions, cases, charts, models, configuration and timing checks |
 
-See the [source specification](docs/v1_review_and_v2_plan.md), [predeclared experiment design](docs/v2_experiment_design.md), and [implementation details and acceptance mapping](docs/v2_implementation.md).
+See the [source specification](docs/v1_review_and_v2_plan.md), [predeclared experiment design](docs/v2_experiment_design.md), [implementation details and acceptance mapping](docs/v2_implementation.md), [final protocol](docs/final_evaluation_protocol.md), and [final-runner freeze](docs/final_evaluation_freeze.md).
 
 ## Why review capacity matters
 
