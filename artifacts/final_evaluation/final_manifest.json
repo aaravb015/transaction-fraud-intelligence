@@ -1,0 +1,78 @@
+{
+  "project": "transaction-fraud-intelligence",
+  "final_evaluator_version": "0.3.0",
+  "evaluated_at_utc": "2026-09-15T10:22:59.867480+00:00",
+  "python_version": "3.13.15",
+  "frozen_engine_sha256": "6debf4f7501ee0f937bd53c9992f8ecc642c946039dd653aa284229078d2cb1e",
+  "final_engine_sha256": "c21c0a84706399ab6758e9970426e418efc94ecb6c3e4d64bc9a6726d68424a4",
+  "continuation_source_sha256": "0436a0505b8c6ce15864dedeb0851a27b1792930afa5f3a79ff0e131dfdf6243",
+  "frozen_implementation_commit": "a4ab1de96e2d0bed7fa1f19836f9585f3f10344f",
+  "freeze_document_commit": "455b37921e90193199543a1207026e68770faeac",
+  "protocol_commit": "40e90a6af7f4428ed87e56c227f7647a67626de9",
+  "development_fingerprint_archive": "fraud_v2_20260915T093200_432180Z.zip",
+  "development_fingerprint_archive_sha256": "94ce8bd6b6f0a2490ee1b31c90bbaf1abc90a5433730a0f55a68f20dc3a47b05",
+  "seed_list": [42, 123, 2025, 31415, 27182],
+  "models": ["rules", "logistic_history", "catboost_current", "catboost_history"],
+  "review_budgets": [20, 50, 100],
+  "headline_review_budget": 50,
+  "preselected_primary_model": "catboost_history",
+  "feature_list": [
+    "log_amount", "hour_sin", "hour_cos", "prior_count", "prior_count_30d",
+    "attempts_1h", "attempts_24h", "log_attempt_value_24h", "log_prior_median_30d",
+    "amount_ratio_30d", "amount_z_30d", "history_days", "hours_since_previous",
+    "new_device", "new_country", "new_merchant", "known_failures_1h",
+    "prior_accounts_on_device", "hour_deviation", "category", "country"
+  ],
+  "current_feature_list": ["log_amount", "hour_sin", "hour_cos", "category", "country"],
+  "rule_weights": {
+    "unusual_amount": 25,
+    "new_device_high_amount": 25,
+    "attempt_burst": 20,
+    "known_failure_sequence": 15,
+    "shared_device_new_country": 15
+  },
+  "configuration": {
+    "customers": 1200,
+    "days": 120,
+    "merchants": 240,
+    "label_delay_days": 7,
+    "fraud_customer_fraction": 0.35,
+    "review_budgets": [20, 50, 100],
+    "main_review_budget": 50,
+    "boosting_iterations": 600,
+    "threads": 2,
+    "mode": "final_evaluation"
+  },
+  "reserved_period": {
+    "start": "2025-04-13 00:00:00+00:00",
+    "end_exclusive": "2025-05-01 00:00:00+00:00"
+  },
+  "expected_development_hashes": {
+    "42": "7bfa4146dac935d1778c96ba37588263651b48032c979b941323661968b565a8",
+    "123": "70a641992dd7c72a73420ee207a1da97472368852ebaef4ed19dac2abe90d626",
+    "2025": "a8a7e942fad7f3d536e38781d040e8a7bb78686db440e07bedd02f954e35ec6f",
+    "31415": "9582c0956d0738c841b2c519208a9ff2fe9ca76a7e3d1718dda3f84d0347973b",
+    "27182": "1ef5dbf2d16a26c7707c7b372e4c8b8156d53ed6794b06f016d2bb8c946c4dda"
+  },
+  "prefix_integrity_passed_for_all_seeds": true,
+  "locked_test_materialized": true,
+  "locked_test_evaluated": true,
+  "official_evaluation_count_for_this_run": 1,
+  "selection_after_final_outcomes": false,
+  "longitudinal_challenger_promoted": false,
+  "synthetic_data_only": true,
+  "attempted_value_is_not_prevented_loss": true,
+  "static_preflight": {
+    "frozen_engine_sha256": "6debf4f7501ee0f937bd53c9992f8ecc642c946039dd653aa284229078d2cb1e",
+    "continuation_source_sha256": "0436a0505b8c6ce15864dedeb0851a27b1792930afa5f3a79ff0e131dfdf6243",
+    "patch_anchor_count": 7,
+    "extension_probabilities": {
+      "phone_change": 0.06100266430710588,
+      "travel": 0.04950029227553143,
+      "legitimate_burst": 0.07320280651356303,
+      "fraud_episode": 0.07320280651356303
+    },
+    "reserved_period_materialized": false,
+    "reserved_period_evaluated": false
+  }
+}
