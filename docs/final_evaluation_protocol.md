@@ -1,5 +1,7 @@
 # Frozen final-evaluation protocol
 
+> **Post-final clarification:** the continuation rule below is preserved as the original pre-exposure protocol text. Item 2 under "Reserved-period continuation rule" was superseded **before final-period exposure** by [`final_evaluation_protocol_addendum.md`](final_evaluation_protocol_addendum.md), which is the controlling implementation rule. The addendum intentionally does not resume development fraud-episode tails across the day-102 boundary because doing so would alter the frozen RNG prefix.
+
 This document is written **before** the reserved final period is materialized or scored. It implements the next step authorized by `docs/v2_freeze.md`; it does not reopen model development.
 
 ## Frozen inputs
