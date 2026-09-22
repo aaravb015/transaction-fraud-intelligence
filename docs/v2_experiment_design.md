@@ -1,5 +1,7 @@
 # V2 experiment design fixed before execution
 
+> **Historical record.** This document records the plan or implementation state at that time. V2 and its final evaluation are now complete on `main`; days 102–119 are consumed. Earlier branch restrictions and execution instructions below are historical. See the [current README](../README.md) and [final report](final_evaluation_report.md).
+
 This implements `v1_review_and_v2_plan.md`. The locked final period is never generated, read, scored, plotted or exported by the V2 pipeline. Work stays on `codex-fraud-v1`; `main` is not merged.
 
 ## Fixed choices

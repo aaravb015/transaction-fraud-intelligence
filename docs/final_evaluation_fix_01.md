@@ -1,5 +1,7 @@
 # Final-evaluation engineering fix 01
 
+> **Historical record.** This document records the plan or implementation state at that time. V2 and its final evaluation are now complete on `main`; days 102–119 are consumed. Earlier branch restrictions and execution instructions below are historical. See the [current README](../README.md) and [final report](final_evaluation_report.md).
+
 ## Status before fix
 
 The first attempted execution of `notebooks/fraud_final_evaluation.ipynb` failed before any simulator call, reserved-period materialization, model fitting, scoring, or metric computation.

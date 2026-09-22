@@ -1,5 +1,7 @@
 # Final-evaluation protocol addendum
 
+> **Historical record.** This document records the plan or implementation state at that time. V2 and its final evaluation are now complete on `main`; days 102–119 are consumed. Earlier branch restrictions and execution instructions below are historical. See the [current README](../README.md) and [final report](final_evaluation_report.md).
+
 This addendum is recorded **before the reserved period is materialized or scored**.
 
 During implementation review, one detail in `docs/final_evaluation_protocol.md` was tightened to make the freeze protection stronger: the final evaluator does **not** reopen the simulator horizon during the original development-generation loop and does not attempt to preserve tails of fraud episodes that the frozen V2 simulator had deliberately dropped at the day-102 boundary.

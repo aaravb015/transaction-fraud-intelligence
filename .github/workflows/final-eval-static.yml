@@ -2,12 +2,26 @@ name: Final evaluation static checks
 
 on:
   push:
-    branches: [fraud-final-evaluation]
+    branches: [main, fraud-final-evaluation]
     paths:
       - "src/final_eval_*.py"
       - "notebooks/fraud_final_evaluation.ipynb"
       - "docs/final_evaluation_protocol*.md"
       - "docs/final_evaluation_fix_*.md"
+      - "artifacts/final_evaluation/**"
+      - "tests/test_final_evidence.py"
+      - "scripts/verify_final_artifact.py"
+      - ".github/workflows/final-eval-static.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/final_eval_*.py"
+      - "notebooks/fraud_final_evaluation.ipynb"
+      - "docs/final_evaluation_protocol*.md"
+      - "docs/final_evaluation_fix_*.md"
+      - "artifacts/final_evaluation/**"
+      - "tests/test_final_evidence.py"
+      - "scripts/verify_final_artifact.py"
       - ".github/workflows/final-eval-static.yml"
   workflow_dispatch:
 
