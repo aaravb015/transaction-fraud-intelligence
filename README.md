@@ -8,6 +8,14 @@ A reproducible synthetic fraud experiment comparing fixed rules, logistic regres
 
 **Status: experiment complete.** V2 development was frozen before the reserved period was materialized. The one-time reserved-period evaluation has now been completed and independently reviewed. Days 102–119 are no longer unseen and must not be used for further tuning.
 
+## Start here
+
+- **Results and interpretation:** the headline comparison below and the [final evaluation report](docs/final_evaluation_report.md).
+- **Implementation:** [`src/fraud_v2.py`](src/fraud_v2.py) contains the readable simulator, historical features and model comparisons. The V2 Colab notebook embeds this same source.
+- **Scope:** this project demonstrates modelling, behavioural risk analytics and evaluation discipline. [Payments Reconciliation Intelligence](https://github.com/aaravb015/payments-reconciliation-intelligence) demonstrates the complementary SQL, financial controls and exception-management workflow.
+
+The Colab link opens the **development-only** notebook. It does not reproduce the official final evaluation. Historical plans and the final notebook are retained as an audit trail, not instructions to repeat the consumed evaluation.
+
 ## Final result
 
 The preselected primary specification was `catboost_history`. At the predeclared headline operating point of **50 reviews per UTC day**, its mean reserved-period performance across the five frozen seeds was:
@@ -139,13 +147,29 @@ The original development freeze records the frozen implementation commit and eng
 
 ## Code checks
 
+Use Python 3.11–3.13. These checks validate code and existing evidence without executing the final evaluation:
+
 ```bash
+git clone https://github.com/aaravb015/transaction-fraud-intelligence.git
+cd transaction-fraud-intelligence
+python -m venv .venv
+# Linux/macOS; Windows: .venv\Scripts\activate
+source .venv/bin/activate
 python -m pip install -r requirements.txt -r requirements-dev.txt
 python -m pytest -q
 python scripts/build_notebook.py --check
-python scripts/check_notebook.py --execute
+python scripts/check_notebook.py
+```
+
+The optional `python scripts/check_notebook.py --execute` runs a small **development-only** notebook smoke test. It does not tune V2 or touch the final period. Restricted environments without local kernel sockets can add `--plain`.
+
+If you already have the official ZIP, verify its checksum and recompute metrics from existing predictions only:
+
+```bash
 python scripts/verify_final_artifact.py /path/to/fraud_final_20260915T101601_058909Z.zip
 ```
+
+The full official ZIP and prediction exports are **not included in the repository**. A clean checkout can inspect the committed evidence, but cannot independently recompute all final metrics without that archive.
 
 CI validates the development notebook, temporal safeguards, and static final-evaluation/evidence checks. The final-evaluation notebook is intentionally not executed in CI because doing so would repeatedly materialize and score the already-consumed reserved period.
 

@@ -11,7 +11,7 @@ on:
       - "requirements-dev.txt"
       - ".github/workflows/notebook-smoke.yml"
   push:
-    branches: [codex-fraud-v1]
+    branches: [main, codex-fraud-v1]
     paths:
       - "notebooks/**"
       - "scripts/**"

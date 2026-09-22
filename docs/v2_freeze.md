@@ -1,5 +1,7 @@
 # V2 development freeze
 
+> **Historical record.** This document records the plan or implementation state at that time. V2 and its final evaluation are now complete on `main`; days 102–119 are consumed. Earlier branch restrictions and execution instructions below are historical. See the [current README](../README.md) and [final report](final_evaluation_report.md).
+
 This document freezes the V2 development experiment **before any reserved final-test period is materialized, inspected, scored, or used for decisions**.
 
 ## Freeze point

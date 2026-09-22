@@ -33,7 +33,7 @@ This is a synthetic development experiment. V2 keeps the four V1 comparators, ha
 
 **Run:** open a fresh Colab CPU runtime and select **Runtime → Run all**. The notebook installs its own isolated packages, runs every stage in order and offers a timestamped V2 results ZIP. No repository clone, dataset upload, package edits or kernel restart is required for supported Python 3.11–3.13.
 
-The main development configuration has 1,200 customers and a nominal 120-day timeline. **Days 102 onward are reserved and never generated or inspected.** Every output uses development data only. Labels, scenario/context tags, hidden customer preferences and raw entity IDs cannot enter the model feature list.
+The main development configuration has 1,200 customers and a nominal 120-day timeline. **This development notebook never generates or inspects days 102 onward. The separate final evaluation has already consumed days 102–119.** Every output uses development data only. Labels, scenario/context tags, hidden customer preferences and raw entity IDs cannot enter the model feature list.
 
 Amounts are fictional standardized INR attempts, including failed payments. Scores are uncalibrated; value capture is not prevented loss or savings.""")
     section("2. Configuration and reproducibility", """The fixed seed list is **[42, 123, 2025, 31415, 27182]**. All seeds are reported, including in smoke mode. Full runs use 600 maximum boosting iterations and two CPU threads; CI uses 360 customers and 100 iterations with the same timeline, seeds and methodology.
@@ -86,13 +86,13 @@ The full model is the reference. Each ablation has the same maximum training bud
 - False-positive costs are represented through review capacity, not invented monetary savings.
 - Scores are uncalibrated, evidence is descriptive, and top-K is offline.
 - Seed robustness is not proof of generalisation to real clients. Ablations use one seed.
-- No reserved final-period events or labels have been materialized, inspected or evaluated.
+- This development workflow never materializes, inspects or evaluates reserved-period events or labels. The separate final evaluation is complete.
 - APIs, deployed dashboards, public-data benchmarks, SHAP and further infrastructure are outside this pass.
 
-**Next:** return the full V2 ZIP for independent review against the V1 baseline. Do not open the final period or choose a new seed based on these results.""")
+**Experiment status:** V2 and its separate final evaluation are complete. This notebook remains a development-only demonstration. See the repository README for final results and provenance limitations; do not rerun the final period or tune V2.""")
     section("17. Export and download the V2 artefacts", """The export step validates the required files, the five-seed result grid and development-only prediction timestamps before creating the ZIP. It includes comparisons, daily/scenario/context reports, separability, low-and-slow diagnosis, robustness, ablations, predictions, cases, charts, saved primary models and a detailed manifest.
 
-`locked_test_evaluated` and `locked_test_materialized` must both be **false**. Download the ZIP before closing Colab. The final period remains locked.""", "run_stage('export')\ndownload_results()")
+`locked_test_evaluated` and `locked_test_materialized` must both be **false**. These flags describe this development run only. Download its ZIP before closing Colab. The separate final period is consumed and must not be rerun.""", "run_stage('export')\ndownload_results()")
     return {"cells": cells, "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
         "language_info": {"name": "python"}, "colab": {"name": "fraud_v2.ipynb", "provenance": []},
         "fraud_engine_sha256": hashlib.sha256(engine.encode()).hexdigest()}, "nbformat": 4, "nbformat_minor": 5}
